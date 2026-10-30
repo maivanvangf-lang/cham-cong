@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Ứng dụng chấm công và tính lương cá nhân" />
+    <meta name="theme-color" content="#4467ee" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Chấm công" />
+    <link rel="apple-touch-icon" href="icon.svg" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <title>Chấm công hằng ngày</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <div>
+          <div class="brand-row"><span class="brand-mark">✓</span><p class="eyebrow">QUẢN LÝ CÁ NHÂN</p></div>
+          <h1>Chấm công <span>hằng ngày</span></h1>
+          <p class="subtitle">Ghi nhận nhanh. Tính lương chuẩn.</p>
+        </div>
+        <div class="hero-icon" aria-hidden="true"><span>⏱</span></div>
+      </header>
+
+      <section class="summary-grid" aria-label="Thống kê chấm công">
+        <article class="summary-card accent-blue">
+          <span class="stat-icon">▣</span>
+          <span class="summary-label">Ngày đi làm</span>
+          <strong id="total-days">0</strong>
+          <span class="summary-unit">ngày</span>
+        </article>
+        <article class="summary-card accent-green">
+          <span class="stat-icon">◷</span>
+          <span class="summary-label">Tổng giờ làm</span>
+          <strong id="total-hours">0</strong>
+          <span class="summary-unit">giờ</span>
+        </article>
+        <article class="summary-card accent-orange">
+          <span class="stat-icon">↗</span>
+          <span class="summary-label">Giờ tăng ca</span>
+          <strong id="overtime-hours">0</strong>
+          <span class="summary-unit">giờ</span>
+        </article>
+        <article class="summary-card accent-purple">
+          <span class="stat-icon">₫</span>
+          <span class="summary-label">Tiền tạm tính</span>
+          <strong id="total-pay">0 ₫</strong>
+          <span class="summary-unit">theo mức lương đã nhập</span>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">GHI NHẬN</p>
+              <h2>Thêm ngày làm việc</h2>
+            </div>
+            <span class="default-badge">Mặc định 8h + 4h OT</span>
+          </div>
+          <form id="attendance-form" class="attendance-form">
+            <label>
+              Ngày làm việc
+              <input id="work-date" type="date" required />
+            </label>
+            <div class="form-row">
+              <label>
+                Giờ thường
+                <input id="regular-hours" type="number" min="0" max="24" step="0.5" value="8" required />
+              </label>
+              <label>
+                Giờ tăng ca
+                <input id="overtime-input" type="number" min="0" max="24" step="0.5" value="4" required />
+              </label>
+            </div>
+            <label>
+              Ghi chú <span class="optional">(không bắt buộc)</span>
+              <input id="work-note" type="text" maxlength="80" placeholder="Ví dụ: Ca sáng, làm ngày lễ..." />
+            </label>
+            <button class="primary-button" type="submit">+ Lưu ngày công</button>
+            <p id="form-message" class="form-message" role="status"></p>
+          </form>
+        </div>
+
+        <div class="panel salary-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">TÍNH LƯƠNG</p>
+              <h2>Mức lương của bạn</h2>
+            </div>
+            <span class="money-icon" aria-hidden="true">₫</span>
+          </div>
+          <form id="salary-form" class="salary-form">
+            <label>
+              Lương theo giờ (VNĐ)
+              <input id="hourly-rate" type="number" min="0" step="1000" placeholder="Ví dụ: 30000" />
+            </label>
+            <label>
+              Hệ số tăng ca
+              <input id="overtime-rate" type="number" min="0" step="0.1" value="1.5" />
+            </label>
+            <button class="secondary-button" type="submit">Cập nhật tiền lương</button>
+          </form>
+          <div class="salary-note">
+            <span>Tiền giờ thường</span><strong id="regular-pay">0 ₫</strong>
+            <span>Tiền giờ tăng ca</span><strong id="overtime-pay">0 ₫</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel records-panel">
+        <div class="panel-heading records-heading">
+          <div>
+            <p class="section-kicker">LỊCH SỬ</p>
+            <h2>Danh sách ngày công</h2>
+          </div>
+          <button id="clear-all" class="text-button" type="button">Xóa tất cả</button>
+        </div>
+        <div id="empty-state" class="empty-state">
+          <div class="empty-icon" aria-hidden="true">📅</div>
+          <h3>Chưa có ngày công nào</h3>
+          <p>Thêm ngày làm việc đầu tiên để bắt đầu theo dõi.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Ngày</th>
+                <th>Giờ thường</th>
+                <th>Tăng ca</th>
+                <th>Tổng giờ</th>
+                <th>Ghi chú</th>
+                <th><span class="sr-only">Thao tác</span></th>
+              </tr>
+            </thead>
+            <tbody id="records-body"></tbody>
+          </table>
+        </div>
+      </section>
+      <footer>Chấm công được lưu tự động trên thiết bị này.</footer>
+    </main>
+    <script src="app.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
+      }
+    </script>
+  </body>
+</html>

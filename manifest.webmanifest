@@ -1,0 +1,18 @@
+{
+  "name": "Chấm công hằng ngày",
+  "short_name": "Chấm công",
+  "description": "Theo dõi ngày công, giờ tăng ca và tiền lương.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#4467ee",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
