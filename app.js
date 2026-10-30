@@ -3,7 +3,11 @@ const SETTINGS_KEY = "daily-attendance-settings";
 
 const state = {
   records: readStorage(STORAGE_KEY, []),
-  settings: readStorage(SETTINGS_KEY, { hourlyRate: 0, overtimeRate: 1.5 })
+  settings: readStorage(SETTINGS_KEY, { monthlySalary: 9100000, overtimeHourlyRate: 31000 })
+};
+state.settings = {
+  monthlySalary: Number(state.settings.monthlySalary ?? 9100000),
+  overtimeHourlyRate: Number(state.settings.overtimeHourlyRate ?? 31000)
 };
 
 const elements = {
@@ -14,8 +18,8 @@ const elements = {
   note: document.querySelector("#work-note"),
   message: document.querySelector("#form-message"),
   salaryForm: document.querySelector("#salary-form"),
-  hourlyRate: document.querySelector("#hourly-rate"),
-  overtimeRate: document.querySelector("#overtime-rate"),
+  monthlySalary: document.querySelector("#monthly-salary"),
+  overtimeHourlyRate: document.querySelector("#overtime-hourly-rate"),
   body: document.querySelector("#records-body"),
   empty: document.querySelector("#empty-state"),
   clearAll: document.querySelector("#clear-all"),
@@ -23,14 +27,14 @@ const elements = {
   hours: document.querySelector("#total-hours"),
   overtimeHours: document.querySelector("#overtime-hours"),
   totalPay: document.querySelector("#total-pay"),
-  regularPay: document.querySelector("#regular-pay"),
+  basePay: document.querySelector("#base-pay"),
   overtimePay: document.querySelector("#overtime-pay")
 };
 
 const today = new Date();
 elements.date.value = formatDateInput(today);
-elements.hourlyRate.value = state.settings.hourlyRate || "";
-elements.overtimeRate.value = state.settings.overtimeRate;
+elements.monthlySalary.value = state.settings.monthlySalary ?? 9100000;
+elements.overtimeHourlyRate.value = state.settings.overtimeHourlyRate ?? 31000;
 
 elements.form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -58,8 +62,8 @@ elements.form.addEventListener("submit", (event) => {
 elements.salaryForm.addEventListener("submit", (event) => {
   event.preventDefault();
   state.settings = {
-    hourlyRate: Math.max(0, Number(elements.hourlyRate.value) || 0),
-    overtimeRate: Math.max(0, Number(elements.overtimeRate.value) || 0)
+    monthlySalary: Math.max(0, Number(elements.monthlySalary.value) || 0),
+    overtimeHourlyRate: Math.max(0, Number(elements.overtimeHourlyRate.value) || 0)
   };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
   renderSummary();
@@ -103,13 +107,13 @@ function renderRecords() {
 function renderSummary() {
   const regularHours = state.records.reduce((sum, record) => sum + Number(record.regular), 0);
   const overtimeHours = state.records.reduce((sum, record) => sum + Number(record.overtime), 0);
-  const regularPay = regularHours * state.settings.hourlyRate;
-  const overtimePay = overtimeHours * state.settings.hourlyRate * state.settings.overtimeRate;
+  const basePay = state.settings.monthlySalary;
+  const overtimePay = overtimeHours * state.settings.overtimeHourlyRate;
   elements.days.textContent = state.records.length;
   elements.hours.textContent = formatHours(regularHours + overtimeHours);
   elements.overtimeHours.textContent = formatHours(overtimeHours);
-  elements.totalPay.textContent = formatMoney(regularPay + overtimePay);
-  elements.regularPay.textContent = formatMoney(regularPay);
+  elements.totalPay.textContent = formatMoney(basePay + overtimePay);
+  elements.basePay.textContent = formatMoney(basePay);
   elements.overtimePay.textContent = formatMoney(overtimePay);
 }
 
